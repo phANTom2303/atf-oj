@@ -1,9 +1,9 @@
 import Header from "./components/header/Header";
+import Signup from "./pages/Signup";
 function App() {
   return (
     <>
-      <Header />
-      <h1 className="text-3xl font-bold underline">Hellow World !</h1>
+     <Signup/>
     </>
   );
 }
