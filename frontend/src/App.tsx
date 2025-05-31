@@ -9,7 +9,7 @@ function App() {
         <>
             <Header  title='CodeRunn'/>
             <div className='editorContainer'>
-                <Ide defaultLanguage='cpp' defaultTheme='light' isReadOnly={false} />
+                <Ide language='cpp' defaultTheme='light' isReadOnly={false} />
             </div>
         </>
     )

@@ -3,22 +3,20 @@ import { Editor } from '../editor/Editor';
 import styles from './Ide.module.css';
 
 interface IdeProps {
-    defaultLanguage?: string;
+    language?: string;
     defaultTheme?: string;
     isReadOnly?: boolean;
 }
 
 const Ide: React.FC<IdeProps> = ({ 
-    defaultLanguage = 'cpp', 
+    language = 'text',
     defaultTheme = 'light', 
     isReadOnly = false 
 }) => {
-    const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
     const [theme, setTheme] = useState(defaultTheme);
-
-    const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedLanguage(event.target.value);
-    };
+    
+    // Use the language prop instead of hardcoding
+    const selectedLanguage = language;
 
     const handleThemeToggle = () => {
         setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
@@ -30,19 +28,9 @@ const Ide: React.FC<IdeProps> = ({
         <div className={`${styles.ideContainer} ${isDarkTheme ? styles.darkTheme : ''}`}>
             <div className={styles.toolbar}>
                 <div className={styles.toolbarLeft}>
-                    <h3 className={styles.title}>Write your code here</h3>
+                    <h3 className={styles.title}>C++ Code</h3>
                 </div>
                 <div className={styles.toolbarRight}>
-                    <select 
-                        value={selectedLanguage} 
-                        onChange={handleLanguageChange}
-                        className={styles.languageSelector}
-                    >
-                        <option value="cpp">C++</option>
-                        <option value="java">Java</option>
-                        <option value="python">Python</option>
-                    </select>
-                    
                     <div className={styles.themeToggle}>
                         <span>{isDarkTheme ? '🌙' : '☀️'}</span>
                         <button 

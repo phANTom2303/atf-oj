@@ -3,27 +3,16 @@ const cppConfig = {
     language: 'cpp'
 };
 
-const javaConfig = {
-    value: ['public class Main {', '\tpublic static void main(String[] args) {', '\t\tSystem.out.println("Hello World");', '\t}', '}'].join('\n'),
-    language: 'java'
-};
-
-const pythonConfig = {
-    value: 'print("Hello World")',
-    language: 'python'
-};
-
-const txtConfig = { 
+const textConfig = { 
     value : '',
-    language : 'txt',
+    language : 'text',
 }
 
 function getLanguage(language){
     switch(language){
         case "cpp": return cppConfig;
-        case "java" : return javaConfig;
-        case "python" : return pythonConfig;
-        default : return txtConfig;
+        case "text" : return textConfig;
+        default : return textConfig;
     }
 }
 
