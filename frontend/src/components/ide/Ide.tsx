@@ -1,19 +1,27 @@
 import Editor from '@monaco-editor/react';
 import { fileTypes } from "./constants"
-
-
-
 import styles from './Ide.module.css';
 import { useEffect, useRef, useState } from 'react';
-import { languages } from 'monaco-editor';
+import { languages, editor } from 'monaco-editor';
+import axios from "axios";
 
 function Ide() {
-    const monacoRef = useRef(null);
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
     function handleEditorDidMount(editor, monaco) {
-        // here is another way to get monaco instance
-        // you can also store it in `useRef` for further usage
-        monacoRef.current = monaco;
+        editorRef.current = editor;
+    }
+
+    function handleRunCode() {
+        const code = editorRef.current?.getValue();
+        const input = document.getElementById('input')?.textContent;
+        const url = "http://localhost:3000/";
+        const payload = {
+            code: code, input: input,
+        }
+        axios.post(url, payload)
+            .then(() => console.log("Server data POST success"))
+            .catch((err) => console.log(`error : ${err}`));
     }
 
 
@@ -21,6 +29,7 @@ function Ide() {
         <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
                 Toolbar
+                <button onClick={() =>handleRunCode ()}>Submit</button>
             </div>
 
             <div className={styles.codeBoxes}>
