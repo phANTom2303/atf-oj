@@ -4,8 +4,8 @@ const cppConfig = {
 };
 
 const textConfig = { 
-    value : '',
-    language : 'text',
+    value : 'Input/Output Box',
+    language : 'txt',
 }
 
 function getLanguage(language){
