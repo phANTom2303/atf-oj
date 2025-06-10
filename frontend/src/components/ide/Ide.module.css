@@ -1,46 +1,99 @@
 .ideContainer {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: calc(100vh - 80px);
-    margin: 0;
-    box-sizing: border-box;
-    overflow: hidden;
+    height: 100%;
+    background-color: #1e1e1e;
+    /* A slightly lighter dark background for the whole IDE */
 }
 
 .toolbar {
     display: flex;
-    height: 10%;
-    width: 100%;
-    font-size: large;
-    background-color: whitesmoke;
-    color: black;
-    text-align: center;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #333333;
+    /* Darker background for toolbar */
+    color: #cccccc;
+    /* Light grey text color */
+    border-bottom: 1px solid #444444;
+    /* Subtle border */
+    gap: 10px;
+    /* Space between toolbar items */
 }
+
+/* Style for buttons within the toolbar, if you add more */
+.toolbar button {
+    padding: 6px 12px;
+    background-color: #007acc;
+    /* VS Code blue */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.toolbar button:hover {
+    background-color: #005fa3;
+    /* Darker blue on hover */
+}
+
 
 .codeBoxes {
     display: flex;
-    width: 100%;
-    height: 90%;
+    flex-grow: 1;
+    /* Allow codeBoxes to fill remaining vertical space */
+    overflow: hidden;
+    /* Prevent overflow issues with children */
 }
 
 .editorContainer {
-    width: 50%;
-    height: 100%;
+    flex: 1;
+    /* Editor takes up available space */
+    /* background-color: #1e1e1e;  Monaco editor has its own background */
+    overflow: hidden;
+    /* Ensure editor itself doesn't cause overflow */
+    display: flex;
+    /* To make the editor child fill this container */
+    flex-direction: column;
+    /* Stack children vertically if any */
 }
 
-.iocontainer {
-    width: 50%;
-    height: 100%;
+.editorContainer>div {
+    /* Target the direct child div created by @monaco-editor/react */
+    flex-grow: 1;
+    /* Make the editor instance fill the editorContainer */
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+    padding: 8px;   
 }
+
 
 .iocontainer {
     display: flex;
     flex-direction: column;
+    width: 30%;
+    /* Adjust as needed */
+    padding: 10px;
+    background-color: #252526;
+    /* Slightly different dark for I/O */
+    gap: 10px;
+    /* Space between textareas */
+    border-left: 1px solid #444444;
+    /* Separator line */
 }
 
 .iocontainer textarea {
-    width: 100%;
     flex-grow: 1;
+    /* Allow textareas to share space */
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+    padding: 8px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 14px;
     resize: none;
+    /* Disable manual resize by user */
+    min-height: 50px;
+    /* Ensure a minimum height */
 }

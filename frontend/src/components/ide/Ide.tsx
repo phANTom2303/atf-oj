@@ -20,7 +20,14 @@ function Ide() {
             code: code, input: input,
         }
         axios.post(url, payload)
-            .then(() => console.log("Server data POST success"))
+            .then((response) => { 
+                console.log("Server data POST success", response); 
+
+                const outputBox = document.getElementById('output') as HTMLTextAreaElement;
+                if (outputBox) {
+                    outputBox.value = response.data.output;
+                }
+            })
             .catch((err) => console.log(`error : ${err}`));
     }
 
@@ -29,7 +36,7 @@ function Ide() {
         <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
                 Toolbar
-                <button onClick={() =>handleRunCode ()}>Submit</button>
+                <button onClick={() => handleRunCode()}>Submit</button>
             </div>
 
             <div className={styles.codeBoxes}>
@@ -47,7 +54,7 @@ function Ide() {
                 </div>
                 <div className={styles.iocontainer}>
                     <textarea name="input" id="input" defaultValue={"input"}></textarea>
-                    <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea>
+                    {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
                     <textarea name="output" id="output" defaultValue={"output"}></textarea>
                 </div>
             </div>
