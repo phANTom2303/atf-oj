@@ -1,135 +1,99 @@
 .ideContainer {
     display: flex;
     flex-direction: column;
-    width: 100%;
     height: 100%;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e1e;
+    /* A slightly lighter dark background for the whole IDE */
 }
 
 .toolbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-    gap: 16px;
-}
-
-.toolbarLeft {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.toolbarRight {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-}
-
-.languageSelector {
     padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: #fff;
-    color: #333;
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-    min-width: 100px;
+    background-color: #333333;
+    /* Darker background for toolbar */
+    color: #cccccc;
+    /* Light grey text color */
+    border-bottom: 1px solid #444444;
+    /* Subtle border */
+    gap: 10px;
+    /* Space between toolbar items */
 }
 
-.languageSelector:hover {
-    border-color: #4d8edb;
-}
-
-.languageSelector:focus {
-    outline: none;
-    border-color: #4d8edb;
-    box-shadow: 0 0 0 2px rgba(77, 142, 219, 0.2);
-}
-
-.themeToggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #333;
-}
-
-.toggleSwitch {
-    position: relative;
-    width: 48px;
-    height: 24px;
-    background-color: #ddd;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+/* Style for buttons within the toolbar, if you add more */
+.toolbar button {
+    padding: 6px 12px;
+    background-color: #007acc;
+    /* VS Code blue */
+    color: white;
     border: none;
-    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
-.toggleSwitch.dark {
-    background-color: #4d8edb;
+.toolbar button:hover {
+    background-color: #005fa3;
+    /* Darker blue on hover */
 }
 
-.toggleKnob {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
 
-.toggleSwitch.dark .toggleKnob {
-    transform: translateX(24px);
-}
-
-.editorWrapper {
-    flex: 1;
+.codeBoxes {
     display: flex;
-    min-height: 0;
+    flex-grow: 1;
+    /* Allow codeBoxes to fill remaining vertical space */
+    overflow: hidden;
+    /* Prevent overflow issues with children */
 }
 
-/* Dark theme styles for toolbar */
-.ideContainer.darkTheme .toolbar {
-    background-color: #2d2d2d;
-    border-bottom-color: #404040;
+.editorContainer {
+    flex: 1;
+    /* Editor takes up available space */
+    /* background-color: #1e1e1e;  Monaco editor has its own background */
+    overflow: hidden;
+    /* Ensure editor itself doesn't cause overflow */
+    display: flex;
+    /* To make the editor child fill this container */
+    flex-direction: column;
+    /* Stack children vertically if any */
 }
 
-.ideContainer.darkTheme .title {
-    color: #ffffff;
+.editorContainer>div {
+    /* Target the direct child div created by @monaco-editor/react */
+    flex-grow: 1;
+    /* Make the editor instance fill the editorContainer */
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+    padding: 8px;   
 }
 
-.ideContainer.darkTheme .languageSelector {
-    background-color: #404040;
-    border-color: #555;
-    color: #ffffff;
+
+.iocontainer {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    /* Adjust as needed */
+    padding: 10px;
+    background-color: #252526;
+    /* Slightly different dark for I/O */
+    gap: 10px;
+    /* Space between textareas */
+    border-left: 1px solid #444444;
+    /* Separator line */
 }
 
-.ideContainer.darkTheme .languageSelector:hover {
-    border-color: #4d8edb;
-}
-
-.ideContainer.darkTheme .themeToggle {
-    color: #ffffff;
-}
-
-.ideContainer.darkTheme {
+.iocontainer textarea {
+    flex-grow: 1;
+    /* Allow textareas to share space */
     background-color: #1e1e1e;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+    padding: 8px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 14px;
+    resize: none;
+    /* Disable manual resize by user */
+    min-height: 50px;
+    /* Ensure a minimum height */
 }

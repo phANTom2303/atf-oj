@@ -7,10 +7,8 @@ function App() {
 
     return (
         <>
-            <Header  title='CodeRunn'/>
-            <div className='editorContainer'>
-                <Ide language='cpp' defaultTheme='light' isReadOnly={false} />
-            </div>
+            <Header title='CodeRunn' />
+            <Ide/>
         </>
     )
 }

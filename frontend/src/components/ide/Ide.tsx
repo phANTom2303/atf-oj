@@ -1,58 +1,65 @@
-import React, { useState } from 'react';
-import { Editor } from '../editor/Editor';
+import Editor from '@monaco-editor/react';
+import { fileTypes } from "./constants"
 import styles from './Ide.module.css';
+import { useEffect, useRef, useState } from 'react';
+import { languages, editor } from 'monaco-editor';
+import axios from "axios";
 
-interface IdeProps {
-    language?: string;
-    defaultTheme?: string;
-    isReadOnly?: boolean;
-}
+function Ide() {
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-const Ide: React.FC<IdeProps> = ({ 
-    language = 'text',
-    defaultTheme = 'light', 
-    isReadOnly = false 
-}) => {
-    const [theme, setTheme] = useState(defaultTheme);
-    
-    // Use the language prop instead of hardcoding
-    const selectedLanguage = language;
+    function handleEditorDidMount(editor, monaco) {
+        editorRef.current = editor;
+    }
 
-    const handleThemeToggle = () => {
-        setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-    };
+    function handleRunCode() {
+        const code = editorRef.current?.getValue();
+        const input = document.getElementById('input')?.textContent;
+        const url = "http://localhost:3000/";
+        const payload = {
+            code: code, input: input,
+        }
+        axios.post(url, payload)
+            .then((response) => { 
+                console.log("Server data POST success", response); 
 
-    const isDarkTheme = theme === 'dark';
+                const outputBox = document.getElementById('output') as HTMLTextAreaElement;
+                if (outputBox) {
+                    outputBox.value = response.data.output;
+                }
+            })
+            .catch((err) => console.log(`error : ${err}`));
+    }
+
 
     return (
-        <div className={`${styles.ideContainer} ${isDarkTheme ? styles.darkTheme : ''}`}>
+        <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
-                <div className={styles.toolbarLeft}>
-                    <h3 className={styles.title}>C++ Code</h3>
-                </div>
-                <div className={styles.toolbarRight}>
-                    <div className={styles.themeToggle}>
-                        <span>{isDarkTheme ? '🌙' : '☀️'}</span>
-                        <button 
-                            onClick={handleThemeToggle}
-                            className={`${styles.toggleSwitch} ${isDarkTheme ? styles.dark : ''}`}
-                            aria-label={`Switch to ${isDarkTheme ? 'light' : 'dark'} theme`}
-                        >
-                            <div className={styles.toggleKnob}></div>
-                        </button>
-                    </div>
-                </div>
+                Toolbar
+                <button onClick={() => handleRunCode()}>Submit</button>
             </div>
-            
-            <div className={styles.editorWrapper}>
-                <Editor 
-                    language={selectedLanguage}
-                    theme={theme}
-                    isReadOnly={isReadOnly}
-                />
+
+            <div className={styles.codeBoxes}>
+                <div className={styles.editorContainer}>
+                    <Editor
+                        // onChange={setCode}
+                        height="90vh"
+                        language="cpp"
+                        theme="vs-dark"
+                        value={fileTypes.cpp.templateCode}
+                        onMount={handleEditorDidMount}
+
+                    />;
+
+                </div>
+                <div className={styles.iocontainer}>
+                    <textarea name="input" id="input" defaultValue={"input"}></textarea>
+                    {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
+                    <textarea name="output" id="output" defaultValue={"output"}></textarea>
+                </div>
             </div>
         </div>
     );
-};
+}
 
 export default Ide;
