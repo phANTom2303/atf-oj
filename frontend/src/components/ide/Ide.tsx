@@ -7,14 +7,14 @@ import axios from "axios";
 
 function Ide() {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-
+    const [inp, setInp] = useState('input');
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
     }
 
     function handleRunCode() {
         const code = editorRef.current?.getValue();
-        const input = document.getElementById('input')?.textContent;
+        const input = inp;
         const url = "http://localhost:3000/";
         const payload = {
             code: code, input: input,
@@ -31,7 +31,7 @@ function Ide() {
             .catch((err) => console.log(`error : ${err}`));
     }
 
-
+    //TODO : Tryu to use memoization with useMemo
     return (
         <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
@@ -53,7 +53,10 @@ function Ide() {
 
                 </div>
                 <div className={styles.iocontainer}>
-                    <textarea name="input" id="input" defaultValue={"input"}></textarea>
+
+                    <textarea name="input" id="input" value={inp} onChange={(e)=> setInp(e.target.value)}></textarea>
+
+
                     {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
                     <textarea name="output" id="output" defaultValue={"output"}></textarea>
                 </div>

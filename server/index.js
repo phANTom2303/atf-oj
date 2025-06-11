@@ -14,6 +14,8 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
 
+    console.log(req.body);
+    
     axios.post("https://emkc.org/api/v2/piston/execute", {
         "language": "cpp",
         "version": "10.2.0",  // This is GCC 10.2.0 which supports C++17
