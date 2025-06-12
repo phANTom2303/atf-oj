@@ -9,11 +9,16 @@ function Ide() {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const [inp, setInp] = useState('input');
     const [outputBox, setOutputBox] = useState('ouptut');
+    const [isRunning, setIsRunning] = useState(false);
+
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
     }
-
+    
     function handleRunCode() {
+        if(isRunning)
+            return;
+        setIsRunning(true);
         const code = editorRef.current?.getValue();
         const input = inp;
         const url = "http://localhost:3000/";
@@ -29,6 +34,9 @@ function Ide() {
             })
             .catch((err) => {
                 setOutputBox(err);
+            })
+            .finally(() =>{
+                setIsRunning(false);
             });
     }
 
@@ -37,7 +45,7 @@ function Ide() {
         <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
                 Toolbar
-                <button onClick={() => handleRunCode()}>Submit</button>
+                <button onClick={() => handleRunCode()} disabled={isRunning}>{isRunning?"Running...":"Submit"}</button>
             </div>
 
             <div className={styles.codeBoxes}>
