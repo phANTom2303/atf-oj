@@ -4,6 +4,9 @@ const port = 3000;
 const cors = require('cors');
 const axios = require('axios');
 
+const { generateFile } = require('./generateFile');
+const { executeCpp } = require('./runcode');
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -12,29 +15,31 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.post('/', (req, res) => {
-
-    console.log(req.body);
-    
-    axios.post("https://emkc.org/api/v2/piston/execute", {
-        "language": "cpp",
-        "version": "10.2.0",  // This is GCC 10.2.0 which supports C++17
-        "files": [
-            {
-                "name": "main.cpp",
-                "content": req.body.code,
-            }
-        ],
-        "stdin": req.body.input || "",
-    })
-    .then((response) => {
-        console.log(response.data.run);
-        return res.json(response.data.run);
-    })
-    .catch(error => {
-        console.error("Error executing code:", error);
-        return res.status(500).json({ error: "Failed to execute code" });
-    });
+app.post('/', async (req, res) => {
+    try {
+        const codePath = await generateFile("cpp", req.body.code);
+        const inputPath = await generateFile("txt", req.body.input);
+        try {
+            const output = await executeCpp(codePath, inputPath);
+            console.log(output);
+            console.log("------------------------------");
+            return res.json({
+                status: true,
+                output: output,
+            })
+        } catch (rejectionReason) {
+            return res.json({
+                status: false,
+                output: rejectionReason.stderr,
+            })
+        }
+    } catch (error) {
+        console.log("in Catch block");
+        return res.json({
+            status: false,
+            output: "Something went wrong, Try Again",
+        })
+    }
 })
 app.listen(port, () => {
     console.log(`CodeRunn Backend is listening on port ${port}`)

@@ -8,6 +8,7 @@ import axios from "axios";
 function Ide() {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const [inp, setInp] = useState('input');
+    const [outputBox, setOutputBox] = useState('ouptut');
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
     }
@@ -22,13 +23,13 @@ function Ide() {
         axios.post(url, payload)
             .then((response) => { 
                 console.log("Server data POST success", response); 
-
-                const outputBox = document.getElementById('output') as HTMLTextAreaElement;
-                if (outputBox) {
-                    outputBox.value = response.data.output;
-                }
+                console.log(response);
+                setOutputBox(response.data.output);
+                
             })
-            .catch((err) => console.log(`error : ${err}`));
+            .catch((err) => {
+                setOutputBox(err);
+            });
     }
 
     //TODO : Tryu to use memoization with useMemo
@@ -58,7 +59,7 @@ function Ide() {
 
 
                     {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
-                    <textarea name="output" id="output" defaultValue={"output"}></textarea>
+                    <textarea name="output" id="output" value={outputBox}></textarea>
                 </div>
             </div>
         </div>
