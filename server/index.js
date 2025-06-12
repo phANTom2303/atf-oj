@@ -22,6 +22,7 @@ app.post('/', async (req, res) => {
         try {
             const output = await executeCpp(codePath, inputPath);
             console.log(output);
+            console.log("------------------------------");
             return res.json({
                 status: true,
                 output: output,
