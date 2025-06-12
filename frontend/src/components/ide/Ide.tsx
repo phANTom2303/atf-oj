@@ -9,11 +9,27 @@ function Ide() {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const [inp, setInp] = useState('input');
     const [outputBox, setOutputBox] = useState('ouptut');
+    const [isRunning, setIsRunning] = useState(false);
+
+    const axiosCancelTokenRef = useRef<CancelTokenSource | null>(null); // Ref to store the cancel token
+
+    useEffect(() => {
+        // This is the cleanup function that runs when the component unmounts
+        return () => {
+            if (axiosCancelTokenRef.current) {
+                axiosCancelTokenRef.current.cancel("Component unmounted, request cancelled.");
+            }
+        };
+    }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
+
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
     }
 
     function handleRunCode() {
+        if (isRunning)
+            return;
+        setIsRunning(true);
         const code = editorRef.current?.getValue();
         const input = inp;
         const url = "http://localhost:3000/";
@@ -21,14 +37,17 @@ function Ide() {
             code: code, input: input,
         }
         axios.post(url, payload)
-            .then((response) => { 
-                console.log("Server data POST success", response); 
+            .then((response) => {
+                console.log("Server data POST success", response);
                 console.log(response);
                 setOutputBox(response.data.output);
-                
+
             })
             .catch((err) => {
                 setOutputBox(err);
+            })
+            .finally(() => {
+                setIsRunning(false);
             });
     }
 
@@ -37,7 +56,7 @@ function Ide() {
         <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
                 Toolbar
-                <button onClick={() => handleRunCode()}>Submit</button>
+                <button onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit"}</button>
             </div>
 
             <div className={styles.codeBoxes}>
@@ -55,7 +74,7 @@ function Ide() {
                 </div>
                 <div className={styles.iocontainer}>
 
-                    <textarea name="input" id="input" value={inp} onChange={(e)=> setInp(e.target.value)}></textarea>
+                    <textarea name="input" id="input" value={inp} onChange={(e) => setInp(e.target.value)}></textarea>
 
 
                     {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
