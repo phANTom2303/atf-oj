@@ -2,98 +2,132 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #1e1e1e;
-    /* A slightly lighter dark background for the whole IDE */
+    background: linear-gradient(to bottom, #1a1a2e, #0f0f20); /* Darker gradient background */
+    color: #e2e2e2;
 }
 
+.logo{
+    width: 40px;
+}
 .toolbar {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
-    background-color: #333333;
-    /* Darker background for toolbar */
-    color: #cccccc;
-    /* Light grey text color */
-    border-bottom: 1px solid #444444;
-    /* Subtle border */
-    gap: 10px;
-    /* Space between toolbar items */
+    padding: 10px 16px;
+    background: linear-gradient(to right, #16213e, #121a30); /* Horizontal gradient for toolbar */
+    color: #e2e2e2;
+    border-bottom: 1px solid #0f3460;
+    gap: 15px;
 }
 
-/* Style for buttons within the toolbar, if you add more */
-.toolbar button {
-    padding: 6px 12px;
-    background-color: #007acc;
-    /* VS Code blue */
+.toolbarTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #4cc9f0; /* Bright blue for title */
+}
+
+.submitButton {
+    min-width: 120px; /* Fixed width for the button */
+    padding: 8px 12px;
+    background: linear-gradient(to bottom, #4361ee, #3a56d4); /* Gradient button */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    transition: all 0.2s ease;
+    text-align: center;
 }
 
-.toolbar button:hover {
-    background-color: #005fa3;
-    /* Darker blue on hover */
+.submitButton:hover {
+    background: linear-gradient(to bottom, #3a56d4, #304bc0); /* Darker gradient on hover */
+    box-shadow: 0 0 8px rgba(67, 97, 238, 0.5);
 }
 
+.submitButton:disabled {
+    background: linear-gradient(to bottom, #2c3e64, #243250);
+    cursor: not-allowed;
+    opacity: 0.8;
+    box-shadow: none;
+}
+
+.toolbarLink {
+    margin-left: auto; /* Push link to the right */
+    color: #4cc9f0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.toolbarLink:hover {
+    color: #7bdff2;
+    text-decoration: underline;
+}
 
 .codeBoxes {
     display: flex;
     flex-grow: 1;
-    /* Allow codeBoxes to fill remaining vertical space */
     overflow: hidden;
-    /* Prevent overflow issues with children */
 }
 
 .editorContainer {
     flex: 1;
-    /* Editor takes up available space */
-    /* background-color: #1e1e1e;  Monaco editor has its own background */
     overflow: hidden;
-    /* Ensure editor itself doesn't cause overflow */
     display: flex;
-    /* To make the editor child fill this container */
     flex-direction: column;
-    /* Stack children vertically if any */
 }
 
-.editorContainer>div {
-    /* Target the direct child div created by @monaco-editor/react */
+.editorContainer > div {
     flex-grow: 1;
-    /* Make the editor instance fill the editorContainer */
-    border: 1px solid #3c3c3c;
-    border-radius: 3px;
-    padding: 8px;   
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
-
 
 .iocontainer {
     display: flex;
     flex-direction: column;
     width: 30%;
-    /* Adjust as needed */
-    padding: 10px;
-    background-color: #252526;
-    /* Slightly different dark for I/O */
-    gap: 10px;
-    /* Space between textareas */
-    border-left: 1px solid #444444;
-    /* Separator line */
+    padding: 12px;
+    background: linear-gradient(135deg, #16213e, #111a30); /* Diagonal gradient */
+    gap: 12px;
+    border-left: 1px solid #0f3460;
 }
 
 .iocontainer textarea {
     flex-grow: 1;
-    /* Allow textareas to share space */
-    background-color: #1e1e1e;
-    color: #d4d4d4;
-    border: 1px solid #3c3c3c;
-    border-radius: 3px;
-    padding: 8px;
+    background: linear-gradient(to bottom, #1a1a2e, #151525);
+    color: #e2e2e2;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    padding: 10px;
     font-family: Consolas, "Courier New", monospace;
     font-size: 14px;
     resize: none;
-    /* Disable manual resize by user */
-    min-height: 50px;
-    /* Ensure a minimum height */
+    min-height: 80px;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.2s ease;
+}
+
+.iocontainer textarea:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2), 0 0 3px rgba(67, 97, 238, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .codeBoxes {
+        flex-direction: column;
+    }
+    
+    .iocontainer {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #0f3460;
+    }
+    
+    .toolbar {
+        flex-wrap: wrap;
+    }
 }

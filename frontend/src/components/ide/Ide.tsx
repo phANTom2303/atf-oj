@@ -32,7 +32,7 @@ function Ide() {
         setIsRunning(true);
         const code = editorRef.current?.getValue();
         const input = inp;
-        const url = "http://localhost:3000/";
+        const url = "http://localhost:3000/code";
         const payload = {
             code: code, input: input,
         }
@@ -55,8 +55,10 @@ function Ide() {
     return (
         <div className={styles.ideContainer}>
             <div className={styles.toolbar}>
-                Toolbar
-                <button onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit"}</button>
+                <img src="../../../c-.png" alt="cpp logo" className={styles.logo}/>
+                <div className={styles.toolbarTitle}>Runner</div>
+                <button className={styles.submitButton}onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
+                <a className={styles.toolbarLink}href="https://github.com/phANTom2303"> Made by Anish</a>
             </div>
 
             <div className={styles.codeBoxes}>
@@ -69,7 +71,7 @@ function Ide() {
                         value={fileTypes.cpp.templateCode}
                         onMount={handleEditorDidMount}
 
-                    />;
+                    />
 
                 </div>
                 <div className={styles.iocontainer}>
