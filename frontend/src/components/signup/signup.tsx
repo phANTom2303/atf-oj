@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import styles from './signup.module.css';
+import axios from 'axios';
 
 interface FormData {
     name: string;
@@ -57,22 +58,35 @@ const Signup: React.FC<SignupProps> = ({ onToggleForm }) => {
         return Object.keys(formErrors).length === 0;
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (validateForm()) {
             setIsSubmitting(true);
 
-            // Here you would typically make an API call to register the user
-            console.log("Form submitted:", formData);
+            await axios.post('http://localhost:3000/user/signup', {
+                ...formData,
+            })
+                .then((response) => {
+                    console.log(response);
+                    console.log("Form submitted:", formData);
+
+                    // Simulate API call
+
+                    setIsSubmitting(false);
+                    alert("Signup successful!");
+                    // Redirect to login or clear form
+                    setFormData({ name: '', email: '', password: '' });
+                    onToggleForm(true);
+                }).catch((error) => {
+                    console.log(error.message);
+                });
 
             // Simulate API call
-            setTimeout(() => {
-                setIsSubmitting(false);
-                alert("Signup successful!");
-                // Redirect to login or clear form
-                setFormData({ name: '', email: '', password: '' });
-            }, 1000);
+
+            setIsSubmitting(false);
+            // Redirect to login or clear form
+            setFormData({ name: '', email: '', password: '' });
         }
     };
 
