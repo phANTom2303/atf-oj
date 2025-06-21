@@ -34,10 +34,10 @@ export const useUser = () => {
 // Landing page component
 const LandingPage = () => {
     const [showSignIn, setShowSignIn] = useState(true);
-    
+
     return (
         <div className="landing-page">
-            <Header title='CodeRunn'/>
+            <Header title='CodeRunn' />
             <div className="auth-container">
                 {showSignIn ? <Signin onToggleForm={setShowSignIn} /> : <Signup onToggleForm={setShowSignIn} />}
             </div>
@@ -53,7 +53,7 @@ function App() {
             <>
                 {user ? (
                     <>
-                        <Header title='CodeRunn'/>
+                        <Header title='C++ Runner' />
                         <Ide />
                     </>
                 ) : (

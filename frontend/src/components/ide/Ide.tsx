@@ -3,6 +3,8 @@ import { fileTypes } from "./constants"
 import styles from './Ide.module.css';
 import { useEffect, useRef, useState } from 'react';
 import { languages, editor } from 'monaco-editor';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 import axios from "axios";
 
 function Ide() {
@@ -32,7 +34,7 @@ function Ide() {
         setIsRunning(true);
         const code = editorRef.current?.getValue();
         const input = inp;
-        const url = "http://localhost:3000/code";
+        const url = `${backendUrl}/code`;
         const payload = {
             code: code, input: input,
         }
