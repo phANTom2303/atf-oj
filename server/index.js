@@ -1,3 +1,4 @@
+const cookieParser = require("cookie-parser");
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -11,13 +12,14 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 
 connectMongoDB(process.env.MONGO_URL)
     .then(() => {
         console.log("mongo Connection success");
     }).catch((err) => {
-        console.log(`Mongo Connectino failed due to : \n ${err}`);
+        console.log(`Mongo Connection failed due to : \n ${err}`);
     })
 
 

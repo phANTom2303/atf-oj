@@ -13,19 +13,16 @@ async function handleCreateUser(req, res) {
 
 async function handleUserLogin(req, res) {
     console.log(req.body);
-    const { email, password } = req.body;
-    const currUser = await User.findOne({
-        email,
-        password,
-    });
-
-    if (!currUser) {
-        return res.json({
-            "error": 'Invalid Username or Password',
-        });
-    }
-
-    return res.json({"msg" : "login success"});
+    console.log("reached handleUserLogin funciton");
+    const { email, password } = req.query || req.body;
+    await User.verifyPasswordAndGenerateToken(email, password)
+        .then((result) => {
+            const { token, name } = result;
+            return res.cookie("token", token).json({"msg" : "login successfull", "name": name});
+        })
+        .catch((error) => {
+            return res.json({ "msg": error.message });
+        })
 }
 
 async function handleGetAllUsers(req, res) {

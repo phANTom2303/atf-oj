@@ -1,5 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import styles from './signin.module.css';
+import axios from 'axios';
+import { useUser } from '../../App';
 
 interface FormData {
     email: string;
@@ -16,6 +18,7 @@ interface SigninProps {
 }
 
 const Signin: React.FC<SigninProps> = ({ onToggleForm }) => {
+    const { setUser } = useUser();
     const [formData, setFormData] = useState<FormData>({
         email: '',
         password: ''
@@ -48,22 +51,44 @@ const Signin: React.FC<SigninProps> = ({ onToggleForm }) => {
         return Object.keys(formErrors).length === 0;
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (validateForm()) {
             setIsSubmitting(true);
 
-            // Here you would typically make an API call to authenticate the user
-            console.log("Form submitted:", formData);
 
-            // Simulate API call
-            setTimeout(() => {
-                setIsSubmitting(false);
-                alert("Signin successful!");
-                // Redirect to dashboard or home page
-                setFormData({ email: '', password: '' });
-            }, 1000);
+            await axios.get(`http://localhost:3000/user/login`, {
+                params: formData
+            })
+                .then((response) => {
+                    // Extract and log the token cookie
+                    const cookies = document.cookie.split(';');
+                    const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('token='));
+                    if (tokenCookie) {
+                        console.log("Auth token:", tokenCookie.trim().substring(6));
+                    } else {
+                        console.log("No token cookie found");
+                    }
+                    console.log("Login successful:", response.data);
+
+                    // Set the user in context using the response data
+                    setUser({
+                        name: response.data.name,
+                        email: response.data.email,
+                        id: response.data.id
+                    });
+
+                    setIsSubmitting(false);
+                    setFormData({ email: '', password: '' });
+                })
+                .catch((error) => {
+                    // Handle login errors
+                    console.error("Login failed:", error.response?.data || error.message);
+                    alert("Login failed: " + (error.response?.data?.message || "Please try again"));
+                    setIsSubmitting(false);
+                });
+
         }
     };
 
