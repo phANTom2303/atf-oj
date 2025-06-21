@@ -8,8 +8,12 @@ const userRouter = require('./routes/userRouter');
 const { connectMongoDB } = require('./utils/connectMongo');
 // Load environment variables from .env file
 require('dotenv').config();
-
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true, // Allow cookies to be sent
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

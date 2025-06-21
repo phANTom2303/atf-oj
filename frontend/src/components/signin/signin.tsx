@@ -59,7 +59,8 @@ const Signin: React.FC<SigninProps> = ({ onToggleForm }) => {
 
 
             await axios.get(`http://localhost:3000/user/login`, {
-                params: formData
+                params: formData,
+                withCredentials: true,
             })
                 .then((response) => {
                     // Extract and log the token cookie

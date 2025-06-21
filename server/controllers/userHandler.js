@@ -18,7 +18,25 @@ async function handleUserLogin(req, res) {
     await User.verifyPasswordAndGenerateToken(email, password)
         .then((result) => {
             const { token, name } = result;
-            return res.cookie("token", token).json({"msg" : "login successfull", "name": name});
+            // Step 1: Attach the cookie to res
+            res.cookie("token", token, {
+                httpOnly: true, // Prevents XSS attacks
+                secure: false, // Set to true in production with HTTPS
+                sameSite: 'lax', // Allows cross-origin requests
+                maxAge: 30 * 24 * 60 * 60 * 1000 // 24 hours
+            });
+
+            // Step 2: Prepare the response data
+            const responseData = { "msg": "login successfull", "name": name };
+
+            // Step 3: Log the response object
+            console.log("Cookie verification:", {
+                cookieHeader: res.getHeader ? res.getHeader('Set-Cookie') : (res._headers && res._headers['set-cookie']),
+                data: responseData
+            });
+
+            // Step 4: Return the response
+            return res.json(responseData);
         })
         .catch((error) => {
             return res.json({ "msg": error.message });
