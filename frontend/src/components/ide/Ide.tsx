@@ -82,7 +82,7 @@ function Ide() {
 
 
                     {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
-                    <textarea name="output" id="output" value={outputBox}></textarea>
+                    <textarea name="output" id="output" value={outputBox} readOnly={true}></textarea>
                 </div>
             </div>
         </div>

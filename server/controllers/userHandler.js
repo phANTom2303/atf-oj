@@ -39,7 +39,7 @@ async function handleUserLogin(req, res) {
             return res.json(responseData);
         })
         .catch((error) => {
-            return res.json({ "msg": error.message });
+            return res.status(404).json({ "msg": error.message });
         })
 }
 
