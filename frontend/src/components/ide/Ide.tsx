@@ -13,6 +13,7 @@ function Ide() {
     const [inp, setInp] = useState('input');
     const [outputBox, setOutputBox] = useState('ouptut');
     const [isRunning, setIsRunning] = useState(false);
+    const [statusMessage, setStatusMessage] = useState('Hello');
     const { user, setUser } = useUser();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,7 @@ function Ide() {
         if (isRunning)
             return;
         setIsRunning(true);
+        setStatusMessage("Running...");
         const code = editorRef.current?.getValue();
         const input = inp;
         const url = `${backendUrl}/code`;
@@ -54,6 +56,7 @@ function Ide() {
             })
             .finally(() => {
                 setIsRunning(false);
+                setStatusMessage("Execution Complete")
             });
     }
 
@@ -61,12 +64,12 @@ function Ide() {
         try {
             // Clear the user context
             setUser(null);
-            
+
             // Optional: Call backend to clear the cookie
             await axios.post('http://localhost:3000/user/logout', {}, {
                 withCredentials: true
             });
-            
+
             console.log('User signed out successfully');
         } catch (error) {
             console.error('Error during sign out:', error);
@@ -80,7 +83,7 @@ function Ide() {
 
     const handleMenuItemClick = (action: string) => {
         setShowUserMenu(false);
-        
+
         switch (action) {
             case 'profile':
                 console.log('Profile clicked');
@@ -120,32 +123,33 @@ function Ide() {
     //TODO : Tryu to use memoization with useMemo
     return (
         <div className={styles.ideContainer}>            <div className={styles.toolbar}>
-                <img src="../../../c-.png" alt="cpp logo" className={styles.logo}/>
-                <div className={styles.toolbarTitle}>Runner</div>
-                <button className={styles.submitButton}onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
-                
-                {/* Username display with dropdown menu */}
-                <div className={styles.userSection} ref={userMenuRef}>
-                    <span className={styles.userName} onClick={toggleUserMenu}>
-                        {user?.name || 'User'} ▼
-                    </span>
-                    {showUserMenu && (
-                        <div className={styles.userMenu}>
-                            {/* <div className={styles.menuItem} onClick={() => handleMenuItemClick('profile')}>
+            <img src="../../../c-.png" alt="cpp logo" className={styles.logo} />
+            <div className={styles.toolbarTitle}>Runner</div>
+            <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
+            <div className={styles.statusMessage}>{statusMessage}</div>
+
+            {/* Username display with dropdown menu */}
+            <div className={styles.userSection} ref={userMenuRef}>
+                <span className={styles.userName} onClick={toggleUserMenu}>
+                    {user?.name || 'User'} ▼
+                </span>
+                {showUserMenu && (
+                    <div className={styles.userMenu}>
+                        {/* <div className={styles.menuItem} onClick={() => handleMenuItemClick('profile')}>
                                 Profile
                             </div>
                             <div className={styles.menuItem} onClick={() => handleMenuItemClick('settings')}>
                                 Settings
                             </div> */}
-                            <div className={styles.menuItem} onClick={() => handleMenuItemClick('signout')}>
-                                Sign Out
-                            </div>
+                        <div className={styles.menuItem} onClick={() => handleMenuItemClick('signout')}>
+                            Sign Out
                         </div>
-                    )}
-                </div>
-                
-                {/* <a className={styles.toolbarLink}href="https://github.com/phANTom2303"> Made by Anish</a> */}
+                    </div>
+                )}
             </div>
+
+            {/* <a className={styles.toolbarLink}href="https://github.com/phANTom2303"> Made by Anish</a> */}
+        </div>
 
             <div className={styles.codeBoxes}>
                 <div className={styles.editorContainer}>
