@@ -1,4 +1,4 @@
-const { exec } = require("child_process");
+const { exec, spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
@@ -37,25 +37,106 @@ const compileCpp = (filepath, outPath) => {
     });
 };
 
-// Function that returns a promise for timeout
-const createTimeoutPromise = (timeoutMs) => {
+// Alternative implementation using spawn for better process control
+const executeCompiledCppWithSpawn = (outPath, inputPath, jobId, timeoutMs = 5000) => {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
+        // Use spawn to run the executable directly with better process control
+        const childProcess = spawn(`./${jobId}.out`, [], {
+            cwd: outputPath,
+            stdio: ['pipe', 'pipe', 'pipe'],
+            detached: true // Create a new process group
+        });
+        
+        let stdout = '';
+        let stderr = '';
+        
+        // Handle stdout data
+        childProcess.stdout.on('data', (data) => {
+            stdout += data.toString();
+        });
+        
+        // Handle stderr data
+        childProcess.stderr.on('data', (data) => {
+            stderr += data.toString();
+        });
+        
+        // Handle process exit
+        childProcess.on('close', (code) => {
+            // Clear the timeout since execution completed
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            
+            if (code !== 0) {
+                reject({
+                    type: 'execution_error',
+                    error: `Process exited with code ${code}`,
+                    stderr,
+                    message: 'Code execution failed'
+                });
+                return;
+            }
+            
+            if (stderr) {
+                console.log('Execution stderr:', stderr);
+                resolve({ output: stdout, warnings: stderr });
+                return;
+            }
+            
+            console.log(stdout);
+            resolve({ output: stdout });
+        });
+        
+        // Handle process error
+        childProcess.on('error', (error) => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            reject({
+                type: 'execution_error',
+                error,
+                message: 'Failed to start process'
+            });
+        });
+        
+        // Write input to the process
+        if (fs.existsSync(inputPath)) {
+            const inputData = fs.readFileSync(inputPath, 'utf8');
+            childProcess.stdin.write(inputData);
+        }
+        childProcess.stdin.end();
+        
+        // Set up timeout that kills the entire process group
+        const timeoutId = setTimeout(() => {
+            console.log(`Killing process group for job: ${jobId} due to timeout`);
+            
+            try {
+                // Kill the entire process group (negative PID)
+                process.kill(-childProcess.pid, 'SIGKILL');
+            } catch (killError) {
+                console.log(`Failed to kill process group:`, killError.message);
+                // Fallback to killing individual process
+                childProcess.kill('SIGKILL');
+            }
+            
             reject({
                 type: 'time_limit_exceeded',
                 status: false,
                 output: "Time Limit Exceeded",
                 message: `Code execution timed out after ${timeoutMs}ms`,
                 executionTime: timeoutMs
-            })
-        }, timeoutMs)
-    })
-}
-
-// Helper function to execute compiled C++ binary
-const executeCompiledCpp = (outPath, inputPath, jobId) => {
+            });
+        }, timeoutMs);
+    });
+};
+const executeCompiledCpp = (outPath, inputPath, jobId, timeoutMs = 5000) => {
     return new Promise((resolve, reject) => {
-        exec(`cd ${outputPath} && ./${jobId}.out < ${inputPath}`, (error, stdout, stderr) => {
+        const childProcess = exec(`cd ${outputPath} && ./${jobId}.out < ${inputPath}`, (error, stdout, stderr) => {
+            // Clear the timeout since execution completed
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            
             if (error) {
                 console.log('Execution error:', error);
                 console.log('Execution stderr:', stderr);
@@ -77,6 +158,29 @@ const executeCompiledCpp = (outPath, inputPath, jobId) => {
             console.log(stdout);
             resolve({ output: stdout });
         });
+        
+        // Set up timeout that kills the process tree
+        const timeoutId = setTimeout(() => {
+            console.log(`Killing process tree for job: ${jobId} due to timeout`);
+            
+            // Kill the entire process tree to ensure the .out file is also killed
+            try {
+                // On Unix systems, kill the process group
+                process.kill(-childProcess.pid, 'SIGKILL');
+            } catch (killError) {
+                console.log(`Failed to kill process group, trying individual process kill:`, killError.message);
+                // Fallback to killing just the immediate process
+                childProcess.kill('SIGKILL');
+            }
+            
+            reject({
+                type: 'time_limit_exceeded',
+                status: false,
+                output: "Time Limit Exceeded",
+                message: `Code execution timed out after ${timeoutMs}ms`,
+                executionTime: timeoutMs
+            });
+        }, timeoutMs);
     });
 };
 
@@ -97,10 +201,8 @@ const executeCpp = async (filepath, inputPath) => {
         const startTime = Date.now();
         
         try {
-            const result = await Promise.race([
-                executeCompiledCpp(outPath, inputPath, jobId),
-                createTimeoutPromise(5000)
-            ]);
+            // Execute with integrated timeout and process killing using spawn for better process control
+            const result = await executeCompiledCppWithSpawn(outPath, inputPath, jobId, 5000);
             
             const endTime = Date.now();
             const executionTime = endTime - startTime;
