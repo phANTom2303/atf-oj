@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hubot+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+
 .ideContainer {
     display: flex;
     flex-direction: column;
@@ -31,20 +34,26 @@
 .toolbarTitle {
     font-size: 16px;
     font-weight: 600;
+    font-family: "Hubot Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
     color: #4cc9f0; /* Bright blue for title */
 }
 
 .submitButton {
     min-width: 120px; /* Fixed width for the button */
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: linear-gradient(to bottom, #4361ee, #3a56d4); /* Gradient button */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    font-family: "Share Tech Mono", monospace;
     transition: all 0.2s ease;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .submitButton:hover {
@@ -116,16 +125,18 @@
 
 .checkerButton {
     min-width: 100px;
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: linear-gradient(to bottom, #64748b, #475569);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    font-family: "Share Tech Mono", monospace;
     transition: all 0.2s ease;
     text-align: center;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .checkerButton:hover {
@@ -166,6 +177,8 @@
     font-size: 11px;
     color: #9ca3af;
     font-weight: 400;
+    font-family: "Share Tech Mono", monospace;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 0;
     opacity: 0.8;
@@ -203,6 +216,10 @@
     color: #ffffff;
     font-size: 14px;
     font-weight: 500;
+    font-family: "Hubot Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 4px;
@@ -239,6 +256,10 @@
     color: #ffffff;
     cursor: pointer;
     font-size: 14px;
+    font-family: "Hubot Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
     transition: background-color 0.2s ease;
     border-bottom: 1px solid #4a4a4a;
 }
@@ -257,24 +278,26 @@
 
 /* Status message styles */
 .statusMessage {
-    padding: 8px 12px;
+    padding: 7px 12px;
     border-radius: 4px;
     font-size: 14px;
-    font-weight: 500;
-    background-color: #15803d; /* Darker green by default */
-    color: white;
-    border: 1px solid #166534;
+    font-weight: 700;
+    font-family: "Share Tech Mono", monospace;
+    background-color: transparent;
+    color: #15803d;
+    border: 3px solid #15803d;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .statusMessage.error {
-    background-color: #dc2626; /* Darker red for errors */
-    border-color: #b91c1c;
+    color: #dc2626;
+    border-color: #dc2626;
 }
 
 .statusMessage.running {
-    background-color: #d97706; /* Orange-yellow for running */
-    border-color: #b45309;
+    color: #d97706;
+    border-color: #d97706;
 }
 
 /* Responsive adjustments */
