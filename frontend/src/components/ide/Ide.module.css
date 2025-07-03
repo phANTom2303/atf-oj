@@ -94,6 +94,23 @@
     border-left: 1px solid #0f3460;
 }
 
+.controlRow {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.controlRow .submitButton {
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.controlRow .statusMessage {
+    flex: 1;
+    min-width: 0;
+}
+
 .iocontainer textarea {
     flex-grow: 1;
     background: linear-gradient(to bottom, #1a1a2e, #151525);

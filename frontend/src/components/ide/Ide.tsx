@@ -12,6 +12,7 @@ function Ide() {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const [inp, setInp] = useState('input');
     const [outputBox, setOutputBox] = useState('ouptut');
+    const [expectedOutput, setExpectedOutput] = useState('expected output');
     const [isRunning, setIsRunning] = useState(false);
     const [statusMessage, setStatusMessage] = useState('Ready to Execute');
     const { user, setUser } = useUser();
@@ -50,7 +51,19 @@ function Ide() {
                 console.log(response);
                 setOutputBox((response.data.output.output) ? response.data.output.output : response.data.output);
                 if (response.data.status) {
-                    setStatusMessage(`Executed in ${response.data.executionTime} ms`)
+                    const executionTime = response.data.executionTime;
+                    let baseMessage = `Executed in ${executionTime} ms`;
+                    
+                    // Compare expected output with actual output
+                    const actualOutput = (response.data.output.output) ? response.data.output.output : response.data.output;
+                    const expectedOutputTrimmed = expectedOutput.trim().toLowerCase();
+                    const actualOutputTrimmed = actualOutput.trim().toLowerCase();
+                    
+                    if (expectedOutputTrimmed === actualOutputTrimmed) {
+                        setStatusMessage(`${baseMessage} - Correct Answer`);
+                    } else {
+                        setStatusMessage(`${baseMessage} - Wrong Answer`);
+                    }
                 } else {
                     const error = response.data.error;
                     if (error === 'compilation_error')
@@ -131,36 +144,33 @@ function Ide() {
 
     //TODO : Tryu to use memoization with useMemo
     return (
-        <div className={styles.ideContainer}>            <div className={styles.toolbar}>
-            <img src="../../../c-.png" alt="cpp logo" className={styles.logo} />
-            <div className={styles.toolbarTitle}>Runner</div>
-            <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
+        <div className={styles.ideContainer}>
+            <div className={styles.toolbar}>
+                <img src="../../../c-.png" alt="cpp logo" className={styles.logo} />
+                <div className={styles.toolbarTitle}>Runner</div>
 
-            {/* Status message box for displaying execution time or error type: */}
-            <div className={`${styles.statusMessage} ${statusMessage.includes('Error') || statusMessage.includes('Exceeded') ? styles.error : statusMessage === 'Running...' ? styles.running : ''}`}>{statusMessage}</div>
-
-            {/* Username display with dropdown menu */}
-            <div className={styles.userSection} ref={userMenuRef}>
-                <span className={styles.userName} onClick={toggleUserMenu}>
-                    {user?.name || 'User'} ▼
-                </span>
-                {showUserMenu && (
-                    <div className={styles.userMenu}>
-                        {/* <div className={styles.menuItem} onClick={() => handleMenuItemClick('profile')}>
-                                Profile
+                {/* Username display with dropdown menu */}
+                <div className={styles.userSection} ref={userMenuRef}>
+                    <span className={styles.userName} onClick={toggleUserMenu}>
+                        {user?.name || 'User'} ▼
+                    </span>
+                    {showUserMenu && (
+                        <div className={styles.userMenu}>
+                            {/* <div className={styles.menuItem} onClick={() => handleMenuItemClick('profile')}>
+                                    Profile
+                                </div>
+                                <div className={styles.menuItem} onClick={() => handleMenuItemClick('settings')}>
+                                    Settings
+                                </div> */}
+                            <div className={styles.menuItem} onClick={() => handleMenuItemClick('signout')}>
+                                Sign Out
                             </div>
-                            <div className={styles.menuItem} onClick={() => handleMenuItemClick('settings')}>
-                                Settings
-                            </div> */}
-                        <div className={styles.menuItem} onClick={() => handleMenuItemClick('signout')}>
-                            Sign Out
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
 
-            {/* <a className={styles.toolbarLink}href="https://github.com/phANTom2303"> Made by Anish</a> */}
-        </div>
+                {/* <a className={styles.toolbarLink}href="https://github.com/phANTom2303"> Made by Anish</a> */}
+            </div>
 
             <div className={styles.codeBoxes}>
                 <div className={styles.editorContainer}>
@@ -176,11 +186,26 @@ function Ide() {
 
                 </div>
                 <div className={styles.iocontainer}>
+                    {/* Submit button and status message row */}
+                    <div className={styles.controlRow}>
+                        <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>
+                            {isRunning ? "Running..." : "Submit"}
+                        </button>
+                        <div className={`${styles.statusMessage} ${
+                            statusMessage.includes('Error') || statusMessage.includes('Exceeded') || statusMessage.includes('Wrong Answer') 
+                                ? styles.error 
+                                : statusMessage === 'Running...' 
+                                    ? styles.running 
+                                    : ''
+                        }`}>
+                            {statusMessage}
+                        </div>
+                    </div>
 
                     <textarea name="input" id="input" value={inp} onChange={(e) => setInp(e.target.value)}></textarea>
 
 
-                    {/* <textarea name="expected_output" id="expected_output" defaultValue={"expected output"}></textarea> */}
+                    <textarea name="expected_output" id="expected_output" value={expectedOutput} onChange={(e) => setExpectedOutput(e.target.value)}></textarea>
                     <textarea name="output" id="output" value={outputBox} readOnly={true}></textarea>
                 </div>
             </div>
