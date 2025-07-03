@@ -19,6 +19,15 @@
     gap: 15px;
 }
 
+.toolbar .controlRow {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    margin: 0 20px;
+}
+
 .toolbarTitle {
     font-size: 16px;
     font-weight: 600;
@@ -98,7 +107,6 @@
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-bottom: 8px;
 }
 
 .controlRow .submitButton {
@@ -135,9 +143,11 @@
     box-shadow: 0 0 8px rgba(5, 150, 105, 0.5);
 }
 
-.controlRow .statusMessage {
+.toolbar .controlRow .statusMessage {
     flex: 1;
-    min-width: 0;
+    min-width: 200px;
+    max-width: 400px;
+    text-align: center;
 }
 
 .textareaGroup {

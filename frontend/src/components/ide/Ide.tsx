@@ -156,6 +156,27 @@ function Ide() {
                 <img src="../../../c-.png" alt="cpp logo" className={styles.logo} />
                 <div className={styles.toolbarTitle}>Runner</div>
 
+                {/* Checker button, status message, and submit button row */}
+                <div className={styles.controlRow}>
+                    <button 
+                        className={`${styles.checkerButton} ${isCheckerActive ? styles.active : ''}`}
+                        onClick={() => setIsCheckerActive(!isCheckerActive)}
+                    >
+                        {isCheckerActive ? "Checker ON" : "Checker OFF"}
+                    </button>
+                    <div className={`${styles.statusMessage} ${statusMessage.includes('Error') || statusMessage.includes('Exceeded') || statusMessage.includes('Wrong Answer')
+                            ? styles.error
+                            : statusMessage === 'Running...'
+                                ? styles.running
+                                : ''
+                        }`}>
+                        {statusMessage}
+                    </div>
+                    <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>
+                        {isRunning ? "Running..." : "Submit"}
+                    </button>
+                </div>
+
                 {/* Username display with dropdown menu */}
                 <div className={styles.userSection} ref={userMenuRef}>
                     <span className={styles.userName} onClick={toggleUserMenu}>
@@ -193,27 +214,6 @@ function Ide() {
 
                 </div>
                 <div className={styles.iocontainer}>
-                    {/* Submit button and status message row */}
-                    <div className={styles.controlRow}>
-                        <button 
-                            className={`${styles.checkerButton} ${isCheckerActive ? styles.active : ''}`}
-                            onClick={() => setIsCheckerActive(!isCheckerActive)}
-                        >
-                            {isCheckerActive ? "Checker ON" : "Checker OFF"}
-                        </button>
-                        <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>
-                            {isRunning ? "Running..." : "Submit"}
-                        </button>
-                        <div className={`${styles.statusMessage} ${statusMessage.includes('Error') || statusMessage.includes('Exceeded') || statusMessage.includes('Wrong Answer')
-                                ? styles.error
-                                : statusMessage === 'Running...'
-                                    ? styles.running
-                                    : ''
-                            }`}>
-                            {statusMessage}
-                        </div>
-                    </div>
-
                     <div className={styles.textareaGroup}>
                         <label className={styles.textareaLabel}>Input</label>
                         <textarea name="input" id="input" value={inp} onChange={(e) => setInp(e.target.value)}></textarea>
