@@ -83,10 +83,33 @@ async function handleVerifyToken(req, res) {
     }
 }
 
+async function handleUserLogout(req, res){
+    try {
+        // Clear the 'token' cookie
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax'
+        });
+        
+        // Send success response
+        return res.json({
+            success: true,
+            msg: "Logged out successfully"
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error during logout"
+        });
+    }
+}
 
 module.exports = {
     handleCreateUser,
     handleUserLogin,
     handleGetAllUsers,
-    handleVerifyToken
+    handleVerifyToken,
+    handleUserLogout
 }
