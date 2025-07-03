@@ -13,7 +13,7 @@ function Ide() {
     const [inp, setInp] = useState('input');
     const [outputBox, setOutputBox] = useState('ouptut');
     const [isRunning, setIsRunning] = useState(false);
-    const [statusMessage, setStatusMessage] = useState('Hello');
+    const [statusMessage, setStatusMessage] = useState('Ready to Execute');
     const { user, setUser } = useUser();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
@@ -136,7 +136,8 @@ function Ide() {
             <div className={styles.toolbarTitle}>Runner</div>
             <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
 
-            <div className={`${styles.statusMessage} ${statusMessage.includes('Error') ||  statusMessage.includes('Exceeded')  ? styles.error : statusMessage === 'Running...' ? styles.running : ''}`}>{statusMessage}</div>
+            {/* Status message box for displaying execution time or error type: */}
+            <div className={`${styles.statusMessage} ${statusMessage.includes('Error') || statusMessage.includes('Exceeded') ? styles.error : statusMessage === 'Running...' ? styles.running : ''}`}>{statusMessage}</div>
 
             {/* Username display with dropdown menu */}
             <div className={styles.userSection} ref={userMenuRef}>
