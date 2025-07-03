@@ -10,12 +10,28 @@ import axios from "axios";
 
 function Ide() {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-    const [inp, setInp] = useState('input');
+    // Update state initialization to load from localStorage
+    const [inp, setInp] = useState(() => {
+        const savedInput = localStorage.getItem('editor-input');
+        return savedInput || 'input';
+    });
     const [outputBox, setOutputBox] = useState('ouptut');
-    const [expectedOutput, setExpectedOutput] = useState('expected output');
+    const [expectedOutput, setExpectedOutput] = useState(() => {
+        const savedExpectedOutput = localStorage.getItem('editor-expected-output');
+        return savedExpectedOutput || 'expected output';
+    });
     const [isRunning, setIsRunning] = useState(false);
     const [statusMessage, setStatusMessage] = useState('Ready to Execute');
-    const [isCheckerActive, setIsCheckerActive] = useState(false);
+    const [isCheckerActive, setIsCheckerActive] = useState(() => {
+        const savedCheckerState = localStorage.getItem('editor-checker-active');
+        return savedCheckerState ? JSON.parse(savedCheckerState) : false;
+    });
+    // Add state for editor code
+    const [code, setCode] = useState(() => {
+        // Load code from localStorage on initial render
+        const savedCode = localStorage.getItem('editor-code');
+        return savedCode || fileTypes.cpp.templateCode;
+    });
     const { user, setUser } = useUser();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
@@ -31,8 +47,35 @@ function Ide() {
         };
     }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
 
+    // Save code to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('editor-code', code);
+    }, [code]);
+
+    // Save input to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('editor-input', inp);
+    }, [inp]);
+
+    // Save expected output to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('editor-expected-output', expectedOutput);
+    }, [expectedOutput]);
+
+    // Save checker state to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('editor-checker-active', JSON.stringify(isCheckerActive));
+    }, [isCheckerActive]);
+
     function handleEditorDidMount(editor: any, monaco: any) {
         editorRef.current = editor;
+    }
+
+    // Add function to handle editor changes
+    function handleEditorChange(value: string | undefined) {
+        if (value !== undefined) {
+            setCode(value);
+        }
     }
 
     function handleRunCode() {
@@ -94,6 +137,12 @@ function Ide() {
             // Clear the user context
             setUser(null);
 
+            // Clear all localStorage values
+            localStorage.removeItem('editor-code');
+            localStorage.removeItem('editor-input');
+            localStorage.removeItem('editor-expected-output');
+            localStorage.removeItem('editor-checker-active');
+
             // Optional: Call backend to clear the cookie
             await axios.post('http://localhost:3000/user/logout', {}, {
                 withCredentials: true
@@ -103,6 +152,11 @@ function Ide() {
         } catch (error) {
             console.error('Error during sign out:', error);
             // User is still signed out on frontend even if backend call fails
+            // Clear localStorage even if backend call fails
+            localStorage.removeItem('editor-code');
+            localStorage.removeItem('editor-input');
+            localStorage.removeItem('editor-expected-output');
+            localStorage.removeItem('editor-checker-active');
         }
     };
 
@@ -203,13 +257,12 @@ function Ide() {
             <div className={styles.codeBoxes}>
                 <div className={styles.editorContainer}>
                     <Editor
-                        // onChange={setCode}
+                        onChange={handleEditorChange}
                         height="90vh"
                         language="cpp"
                         theme="vs-dark"
-                        value={fileTypes.cpp.templateCode}
+                        value={code}
                         onMount={handleEditorDidMount}
-
                     />
 
                 </div>
