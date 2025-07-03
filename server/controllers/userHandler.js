@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
+const { validateToken } = require('../utils/authTokens')
 async function handleCreateUser(req, res) {
     console.log(req.body);
     const { name, email, password } = req.body;
@@ -48,9 +49,44 @@ async function handleGetAllUsers(req, res) {
     return res.json(AllUsers);
 }
 
+async function handleVerifyToken(req, res) {
+    try {
+        // Get token from httpOnly cookie
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                msg: "No token provided"
+            });
+        }
+
+        // Validate the token using your existing utility
+        const payload = validateToken(token);
+
+        // Token is valid, return user data
+        return res.json({
+            success: true,
+            user: {
+                _id: payload._id,
+                name: payload.name,
+                email: payload.email
+            }
+        });
+
+    } catch (error) {
+        console.error('Token verification error:', error);
+        return res.status(401).json({
+            success: false,
+            msg: "Invalid or expired token"
+        });
+    }
+}
+
 
 module.exports = {
     handleCreateUser,
     handleUserLogin,
-    handleGetAllUsers
+    handleGetAllUsers,
+    handleVerifyToken
 }

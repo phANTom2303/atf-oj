@@ -1,10 +1,10 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import './App.css'
-import Header from './components/Header'
 import Ide from './components/ide/Ide';
 import Signin from './components/signin/signin';
 import Signup from './components/signup/signup';
 import './userWorker';
+import axios from 'axios';
 
 // Define the User context type
 interface User {
@@ -37,7 +37,6 @@ const LandingPage = () => {
 
     return (
         <div className="landing-page">
-            <Header title='CodeRunn' />
             <div className="auth-container">
                 {showSignIn ? <Signin onToggleForm={setShowSignIn} /> : <Signup onToggleForm={setShowSignIn} />}
             </div>
@@ -47,13 +46,37 @@ const LandingPage = () => {
 
 function App() {
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        const verifyToken = async () => {
+            try {
+                // This request will automatically include the httpOnly cookie
+                const response = await axios.get('http://localhost:3000/user/verify', {
+                    withCredentials: true
+                });
+
+                if (response.data.success) {
+                    setUser({
+                        id: response.data.user._id,
+                        name: response.data.user.name,
+                        email: response.data.user.email
+                    });
+                }
+            } catch (error) {
+                console.log('No valid token found');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        verifyToken();
+    }, []);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>
             <>
                 {user ? (
                     <>
-                        <Header title='C++ Runner' />
                         <Ide />
                     </>
                 ) : (
