@@ -56,7 +56,7 @@ function Ide() {
                     if (error === 'compilation_error')
                         setStatusMessage("Compilation Error");
                     else if (error === 'time_limit_exceeded')
-                        setStatusMessage("Time Limit Exceeded");
+                        setStatusMessage("Time Limit Exceeded (5000ms)");
                     else
                         setStatusMessage('Runtime Error');
                 }
