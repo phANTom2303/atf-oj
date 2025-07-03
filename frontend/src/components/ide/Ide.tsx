@@ -55,6 +55,8 @@ function Ide() {
                     const error = response.data.error;
                     if (error === 'compilation_error')
                         setStatusMessage("Compilation Error");
+                    else if (error === 'time_limit_exceeded')
+                        setStatusMessage("Time Limit Exceeded");
                     else
                         setStatusMessage('Runtime Error');
                 }
@@ -133,7 +135,8 @@ function Ide() {
             <img src="../../../c-.png" alt="cpp logo" className={styles.logo} />
             <div className={styles.toolbarTitle}>Runner</div>
             <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
-            <div className={`${styles.statusMessage} ${statusMessage.includes('Error') ? styles.error : statusMessage === 'Running...' ? styles.running : ''}`}>{statusMessage}</div>
+
+            <div className={`${styles.statusMessage} ${statusMessage.includes('Error') ||  statusMessage.includes('Exceeded')  ? styles.error : statusMessage === 'Running...' ? styles.running : ''}`}>{statusMessage}</div>
 
             {/* Username display with dropdown menu */}
             <div className={styles.userSection} ref={userMenuRef}>

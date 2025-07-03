@@ -39,9 +39,15 @@ const compileCpp = (filepath, outPath) => {
 
 // Function that returns a promise for timeout
 const createTimeoutPromise = (timeoutMs) => {
-    return new Promise((_, reject) => {
+    return new Promise((resolve, reject) => {
         setTimeout(() => {
-            reject(new Error(`API call timed out after ${timeoutMs}ms`))
+            reject({
+                type: 'time_limit_exceeded',
+                status: false,
+                output: "Time Limit Exceeded",
+                message: `Code execution timed out after ${timeoutMs}ms`,
+                executionTime: timeoutMs
+            })
         }, timeoutMs)
     })
 }
@@ -88,24 +94,41 @@ const executeCpp = async (filepath, inputPath) => {
         // Step 2: Execute the compiled binary
 
         console.log(`Starting execution for job: ${jobId}`);
-        // const startTime = Performance.now();
-        const result = await Promise.race([
-            executeCompiledCpp(outPath, inputPath, jobId),
-            createTimeoutPromise(5000)
-        ])
-        // const endTime = Performance.now();
+        const startTime = Date.now();
+        
+        try {
+            const result = await Promise.race([
+                executeCompiledCpp(outPath, inputPath, jobId),
+                createTimeoutPromise(5000)
+            ]);
+            
+            const endTime = Date.now();
+            const executionTime = endTime - startTime;
+            
+            console.log(`Execution successful for job: ${jobId}`);
+            console.log(`Time Taken : ${executionTime}ms`);
+            console.log(`Result object :`, result);
 
-        const executionTime = 4000;
-        console.log(`Execution successful for job: ${jobId}`);
-        console.log(`Time Taken : ${executionTime}`);
-        console.log(`Result object : \n ${result}`);
-
-        // Return the output with execution time (spread result object for a flat structure)
-        return {
-            ...result,
-            executionTime: executionTime,
-            type: 'success'
-        };
+            // Return the output with execution time (spread result object for a flat structure)
+            return {
+                ...result,
+                executionTime: executionTime,
+                type: 'success'
+            };
+        } catch (timeoutError) {
+            // Handle timeout error specifically
+            if (timeoutError.type === 'time_limit_exceeded') {
+                console.log(`Execution timed out for job: ${jobId}`);
+                console.log(`Timeout error:`, timeoutError);
+                return {
+                    ...timeoutError,
+                    jobId,
+                    timestamp: new Date().toISOString()
+                };
+            }
+            // Re-throw other errors to be handled by the outer catch block
+            throw timeoutError;
+        }
 
     } catch (error) {
         // Return error object instead of throwing, so frontend can access error details

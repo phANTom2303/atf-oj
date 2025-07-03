@@ -10,12 +10,13 @@ async function handleCodeExecute(req, res) {
         console.log("------------------------------");
         
         // Check if result contains an error
-        if (result.type === 'compilation_error' || result.type === 'execution_error') {
+        if (result.type === 'compilation_error' || result.type === 'execution_error' || result.type === 'time_limit_exceeded') {
             return res.json({
                 status: false,
-                output: result.stderr || result.message,
+                output: result.output || result.stderr || result.message,
                 error: result.type,
-                executionTime: result.executionTime || 0
+                executionTime: result.executionTime || 0,
+                message: result.message
             });
         }
         
