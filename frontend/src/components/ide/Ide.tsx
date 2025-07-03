@@ -15,6 +15,7 @@ function Ide() {
     const [expectedOutput, setExpectedOutput] = useState('expected output');
     const [isRunning, setIsRunning] = useState(false);
     const [statusMessage, setStatusMessage] = useState('Ready to Execute');
+    const [isCheckerActive, setIsCheckerActive] = useState(false);
     const { user, setUser } = useUser();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
@@ -54,15 +55,21 @@ function Ide() {
                     const executionTime = response.data.executionTime;
                     let baseMessage = `Executed in ${executionTime} ms`;
                     
-                    // Compare expected output with actual output
-                    const actualOutput = (response.data.output.output) ? response.data.output.output : response.data.output;
-                    const expectedOutputTrimmed = expectedOutput.trim().toLowerCase();
-                    const actualOutputTrimmed = actualOutput.trim().toLowerCase();
-                    
-                    if (expectedOutputTrimmed === actualOutputTrimmed) {
-                        setStatusMessage(`${baseMessage} - Correct Answer`);
+                    // Only compare outputs if checker is active
+                    if (isCheckerActive) {
+                        // Compare expected output with actual output
+                        const actualOutput = (response.data.output.output) ? response.data.output.output : response.data.output;
+                        const expectedOutputTrimmed = expectedOutput.trim().toLowerCase();
+                        const actualOutputTrimmed = actualOutput.trim().toLowerCase();
+                        
+                        if (expectedOutputTrimmed === actualOutputTrimmed) {
+                            setStatusMessage(`${baseMessage} - Correct Answer`);
+                        } else {
+                            setStatusMessage(`${baseMessage} - Wrong Answer`);
+                        }
                     } else {
-                        setStatusMessage(`${baseMessage} - Wrong Answer`);
+                        // Just show the base message when checker is inactive
+                        setStatusMessage(baseMessage);
                     }
                 } else {
                     const error = response.data.error;
@@ -188,25 +195,41 @@ function Ide() {
                 <div className={styles.iocontainer}>
                     {/* Submit button and status message row */}
                     <div className={styles.controlRow}>
+                        <button 
+                            className={`${styles.checkerButton} ${isCheckerActive ? styles.active : ''}`}
+                            onClick={() => setIsCheckerActive(!isCheckerActive)}
+                        >
+                            {isCheckerActive ? "Checker ON" : "Checker OFF"}
+                        </button>
                         <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>
                             {isRunning ? "Running..." : "Submit"}
                         </button>
-                        <div className={`${styles.statusMessage} ${
-                            statusMessage.includes('Error') || statusMessage.includes('Exceeded') || statusMessage.includes('Wrong Answer') 
-                                ? styles.error 
-                                : statusMessage === 'Running...' 
-                                    ? styles.running 
+                        <div className={`${styles.statusMessage} ${statusMessage.includes('Error') || statusMessage.includes('Exceeded') || statusMessage.includes('Wrong Answer')
+                                ? styles.error
+                                : statusMessage === 'Running...'
+                                    ? styles.running
                                     : ''
-                        }`}>
+                            }`}>
                             {statusMessage}
                         </div>
                     </div>
 
-                    <textarea name="input" id="input" value={inp} onChange={(e) => setInp(e.target.value)}></textarea>
+                    <div className={styles.textareaGroup}>
+                        <label className={styles.textareaLabel}>Input</label>
+                        <textarea name="input" id="input" value={inp} onChange={(e) => setInp(e.target.value)}></textarea>
+                    </div>
 
+                    <div className={styles.textareaGroup}>
+                        <label className={styles.textareaLabel}>Output</label>
+                        <textarea name="output" id="output" value={outputBox} readOnly={true}></textarea>
+                    </div>
 
-                    <textarea name="expected_output" id="expected_output" value={expectedOutput} onChange={(e) => setExpectedOutput(e.target.value)}></textarea>
-                    <textarea name="output" id="output" value={outputBox} readOnly={true}></textarea>
+                    {isCheckerActive && (
+                        <div className={styles.textareaGroup}>
+                            <label className={styles.textareaLabel}>Expected Output</label>
+                            <textarea name="expected_output" id="expected_output" value={expectedOutput} onChange={(e) => setExpectedOutput(e.target.value)}></textarea>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
