@@ -49,10 +49,14 @@ function Ide() {
                 console.log("Server data POST success", response);
                 console.log(response);
                 setOutputBox((response.data.output.output) ? response.data.output.output : response.data.output);
-                if(response.data.status){
+                if (response.data.status) {
                     setStatusMessage(`Executed in ${response.data.executionTime} ms`)
                 } else {
-                    setStatusMessage(`${response.data.error}`)
+                    const error = response.data.error;
+                    if (error === 'compilation_error')
+                        setStatusMessage("Compilation Error");
+                    else
+                        setStatusMessage('Runtime Error');
                 }
             })
             .catch((err) => {
@@ -129,7 +133,7 @@ function Ide() {
             <img src="../../../c-.png" alt="cpp logo" className={styles.logo} />
             <div className={styles.toolbarTitle}>Runner</div>
             <button className={styles.submitButton} onClick={() => handleRunCode()} disabled={isRunning}>{isRunning ? "Running..." : "Submit   "}</button>
-            <div className={styles.statusMessage}>{statusMessage}</div>
+            <div className={`${styles.statusMessage} ${statusMessage.includes('Error') ? styles.error : statusMessage === 'Running...' ? styles.running : ''}`}>{statusMessage}</div>
 
             {/* Username display with dropdown menu */}
             <div className={styles.userSection} ref={userMenuRef}>

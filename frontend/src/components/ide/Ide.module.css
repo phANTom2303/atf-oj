@@ -180,6 +180,28 @@
     background-color: #4a4a4a;
 }
 
+/* Status message styles */
+.statusMessage {
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #15803d; /* Darker green by default */
+    color: white;
+    border: 1px solid #166534;
+    transition: all 0.2s ease;
+}
+
+.statusMessage.error {
+    background-color: #dc2626; /* Darker red for errors */
+    border-color: #b91c1c;
+}
+
+.statusMessage.running {
+    background-color: #d97706; /* Orange-yellow for running */
+    border-color: #b45309;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .codeBoxes {
