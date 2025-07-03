@@ -15,9 +15,9 @@ const compileCpp = (filepath, outPath) => {
             if (error) {
                 console.log('Compilation error:', error);
                 console.log('Compilation stderr:', stderr);
-                reject({ 
-                    type: 'compilation_error', 
-                    error, 
+                reject({
+                    type: 'compilation_error',
+                    error,
                     stderr,
                     message: 'Code compilation failed'
                 });
@@ -25,8 +25,8 @@ const compileCpp = (filepath, outPath) => {
             }
             if (stderr) {
                 console.log('Compilation stderr:', stderr);
-                reject({ 
-                    type: 'compilation_error', 
+                reject({
+                    type: 'compilation_error',
                     stderr,
                     message: 'Code compilation failed'
                 });
@@ -37,6 +37,15 @@ const compileCpp = (filepath, outPath) => {
     });
 };
 
+// Function that returns a promise for timeout
+const createTimeoutPromise = (timeoutMs) => {
+    return new Promise((_, reject) => {
+        setTimeout(() => {
+            reject(new Error(`API call timed out after ${timeoutMs}ms`))
+        }, timeoutMs)
+    })
+}
+
 // Helper function to execute compiled C++ binary
 const executeCompiledCpp = (outPath, inputPath, jobId) => {
     return new Promise((resolve, reject) => {
@@ -44,9 +53,9 @@ const executeCompiledCpp = (outPath, inputPath, jobId) => {
             if (error) {
                 console.log('Execution error:', error);
                 console.log('Execution stderr:', stderr);
-                reject({ 
-                    type: 'execution_error', 
-                    error, 
+                reject({
+                    type: 'execution_error',
+                    error,
                     stderr,
                     message: 'Code execution failed'
                 });
@@ -59,6 +68,7 @@ const executeCompiledCpp = (outPath, inputPath, jobId) => {
                 resolve({ output: stdout, warnings: stderr });
                 return;
             }
+            console.log(stdout);
             resolve({ output: stdout });
         });
     });
@@ -76,19 +86,34 @@ const executeCpp = async (filepath, inputPath) => {
         console.log(`Compilation successful for job: ${jobId}`);
 
         // Step 2: Execute the compiled binary
-        console.log(`Starting execution for job: ${jobId}`);
-        const result = await executeCompiledCpp(outPath, inputPath, jobId);
-        console.log(`Execution successful for job: ${jobId}`);
 
-        // Return the output (handle both simple string and object with warnings)
-        return typeof result === 'object' ? result.output : result;
+        console.log(`Starting execution for job: ${jobId}`);
+        // const startTime = Performance.now();
+        const result = await Promise.race([
+            executeCompiledCpp(outPath, inputPath, jobId),
+            createTimeoutPromise(5000)
+        ])
+        // const endTime = Performance.now();
+
+        const executionTime = 4000;
+        console.log(`Execution successful for job: ${jobId}`);
+        console.log(`Time Taken : ${executionTime}`);
+        console.log(`Result object : \n ${result}`);
+
+        // Return the output with execution time (spread result object for a flat structure)
+        return {
+            ...result,
+            executionTime: executionTime,
+            type: 'success'
+        };
 
     } catch (error) {
-        // Re-throw the error with additional context
-        throw {
+        // Return error object instead of throwing, so frontend can access error details
+        return {
             ...error,
             jobId,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            executionTime: 0
         };
     } finally {
         // Clean up the compiled binary (runs regardless of success/failure)

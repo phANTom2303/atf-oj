@@ -48,15 +48,18 @@ function Ide() {
             .then((response) => {
                 console.log("Server data POST success", response);
                 console.log(response);
-                setOutputBox(response.data.output);
-
+                setOutputBox((response.data.output.output) ? response.data.output.output : response.data.output);
+                if(response.data.status){
+                    setStatusMessage(`Executed in ${response.data.executionTime} ms`)
+                } else {
+                    setStatusMessage(`${response.data.error}`)
+                }
             })
             .catch((err) => {
                 setOutputBox(err);
             })
             .finally(() => {
                 setIsRunning(false);
-                setStatusMessage("Execution Complete")
             });
     }
 
