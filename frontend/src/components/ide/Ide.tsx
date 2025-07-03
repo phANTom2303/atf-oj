@@ -131,12 +131,12 @@ function Ide() {
                     </span>
                     {showUserMenu && (
                         <div className={styles.userMenu}>
-                            <div className={styles.menuItem} onClick={() => handleMenuItemClick('profile')}>
+                            {/* <div className={styles.menuItem} onClick={() => handleMenuItemClick('profile')}>
                                 Profile
                             </div>
                             <div className={styles.menuItem} onClick={() => handleMenuItemClick('settings')}>
                                 Settings
-                            </div>
+                            </div> */}
                             <div className={styles.menuItem} onClick={() => handleMenuItemClick('signout')}>
                                 Sign Out
                             </div>
